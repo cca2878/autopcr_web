@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html data-bs-theme="auto" lang="zh">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>AutoPCR</title>
+    <script>
+        (function() {
+
+            // JavaScript snippet handling Dark/Light mode switching
+
+            const getStoredTheme = () => localStorage.getItem('theme');
+            const setStoredTheme = theme => localStorage.setItem('theme', theme);
+            const forcedTheme = document.documentElement.getAttribute('data-bss-forced-theme');
+
+            const getPreferredTheme = () => {
+
+                if (forcedTheme) return forcedTheme;
+
+                const storedTheme = getStoredTheme();
+                if (storedTheme) {
+                    return storedTheme;
+                }
+
+                const pageTheme = document.documentElement.getAttribute('data-bs-theme');
+
+                if (pageTheme) {
+                    return pageTheme;
+                }
+
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
+            const setTheme = theme => {
+                if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.setAttribute('data-bs-theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-bs-theme', theme);
+                }
+            }
+
+            setTheme(getPreferredTheme());
+
+            const showActiveTheme = (theme, focus = false) => {
+                const themeSwitchers = [].slice.call(document.querySelectorAll('.theme-switcher'));
+
+                if (!themeSwitchers.length) return;
+
+                document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
+                    element.classList.remove('active');
+                    element.setAttribute('aria-pressed', 'false');
+                });
+
+                for (const themeSwitcher of themeSwitchers) {
+
+                    const btnToActivate = themeSwitcher.querySelector('[data-bs-theme-value="' + theme + '"]');
+
+                    if (btnToActivate) {
+                        btnToActivate.classList.add('active');
+                        btnToActivate.setAttribute('aria-pressed', 'true');
+                    }
+                }
+            }
+
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                const storedTheme = getStoredTheme();
+                if (storedTheme !== 'light' && storedTheme !== 'dark') {
+                    setTheme(getPreferredTheme());
+                }
+            });
+
+            window.addEventListener('DOMContentLoaded', () => {
+                showActiveTheme(getPreferredTheme());
+
+                document.querySelectorAll('[data-bs-theme-value]')
+                    .forEach(toggle => {
+                        toggle.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const theme = toggle.getAttribute('data-bs-theme-value');
+                            setStoredTheme(theme);
+                            setTheme(theme);
+                            showActiveTheme(theme);
+                        })
+                    })
+            });
+        })();
+    </script>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/Roboto.css">
+    <link rel="stylesheet" href="assets/css/Roboto%20Slab.css">
+    <link rel="stylesheet" href="assets/css/action.css">
+</head>
+
+<body style="max-height: 100vh;">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 w-100 p-0">
+                <div class="hstack flex-wrap sticky-top" style="pointer-events: none;">
+                    <form class="d-flex flex-wrap gap-1 sticky-top" style="pointer-events: auto;">
+                        <button id="do_task" class="btn btn-primary disabled" type="button" flag="run_once" data-bs-toggle="tooltip" title="暂不可用">
+                            <span class="spinner-border spinner-border-sm visually-hidden" aria-hidden="true" style="margin-right: 4px;"></span>
+                            <span role="status">执行全部</span></button>
+                        <button id="do_selected_task" class="btn btn-primary disabled" type="button" data-bs-toggle="tooltip" title="暂不可用">
+                            <span class="spinner-border spinner-border-sm visually-hidden" aria-hidden="true" style="margin-right: 4px;"></span>
+                            <span role="status">执行选中</span></button></form>
+                </div>
+                <div id="card-stack" class="vstack">
+                    <!-- <div class="card mt-2">
+                        <div class="card-header">
+                            <div class="hstack d-flex flex-wrap">
+                                <div class="hstack">
+                                    <div class="d-flex d-lg-flex align-items-center justify-content-lg-center align-items-lg-center"><input type="checkbox" class="form-check-input" style="transform: scale(1.30);margin-top: 0;"></div>
+                                    <div class="vr mx-3"></div>
+                                    <div class="d-flex d-lg-flex align-items-center justify-content-lg-center align-items-lg-center form-check form-switch" style="padding: 0;margin-bottom: 0;"><input type="checkbox" id="flexSwitchCheckDefault" class="form-check-input" style="transform: scale(1.30);margin-left: 2px;margin-top: 0;"></div>
+                                </div>
+                                <h5 style="margin: 0;margin-left: 12px;">abcdefghijklmnopqrstuvwxyz</h5>
+                                <div class="hstack gap-2 ms-auto"><button class="btn btn-primary" type="button" onclick="show_toast('success', 'iframe')"><span class="spinner-border spinner-border-sm" aria-hidden="true" style="margin-right: 4px;"></span>执行此项</button><button class="btn btn-icon" type="button" style="border-style: none;" data-bs-toggle="collapse" data-bs-target="#collapse-1" aria-expanded="true" aria-controls="collapse-1" herf="#collapse-1"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-chevron-up text-primary" style="transform: scale(1.30);transition: transform 0.35s ease;">
+                                            <path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"></path>
+                                        </svg></button></div>
+                            </div>
+                        </div>
+                        <div class="vstack card-body collapse show p-0" id="collapse-1">
+                            <div class="d-flex d-lg-flex justify-content-center justify-content-lg-center" style="margin: var(--bs-card-spacer-y) var(--bs-card-spacer-x);">
+                                <div class="row d-flex flex-wrap w-100 gap-1">
+                                    <div class="col" style="max-width: 38.2%;min-width: 20%;"><label class="form-label" style="font-weight: bold;">描述：</label>
+                                        <p style="margin-bottom: 0;">占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符</p>
+                                        <hr class="w-100" style="margin: 10px 0;"><label class="form-label" style="font-weight: bold;">设置项：</label>
+                                        <form class="form-item-spacing-1">
+                                            <div class="input-group flex-wrap input-group-sm"><span class="text-start input-group-text">设置项Bool</span>
+                                                <div class="input-group-text form-control form-switch" style="padding-left: 16px;min-width: fit-content;"><input type="checkbox" id="flexSwitchCheckDefault-1" class="form-check-input" style="margin: 0;transform: scale(1.30);min-width: 28px;"></div>
+                                            </div>
+                                            <div class="input-group input-group-sm"><span class="text-start input-group-text">设置项Text</span><input class="form-control" type="text"></div>
+                                            <div class="input-group input-group-sm"><span class="text-start align-items-start input-group-text">设置项<br>MultiSelect</span><select class="form-select" multiple="">
+                                                    <option value="12" selected="">This is item 1</option>
+                                                    <option value="13">This is item 2</option>
+                                                    <option value="14">This is item 3</option>
+                                                </select></div>
+                                            <div class="input-group input-group-sm"><span class="text-start align-items-start input-group-text">设置项<br>SingleSelect</span><select class="form-select">
+                                                    <option value="12" selected="">This is item 1</option>
+                                                    <option value="13">This is item 2</option>
+                                                    <option value="14">This is item 3</option>
+                                                </select></div>
+                                            <div class="input-group input-group-sm"><span class="text-start align-items-start input-group-text">设置项Time</span><input class="form-control" type="time"></div>
+                                        </form>
+                                    </div>
+                                    <div class="col-auto" style="padding: 0;">
+                                        <div class="vr h-100"></div>
+                                    </div>
+                                    <div class="col"><label class="form-label" style="font-weight: bold;">运行结果：</label><small class="text-nowrap py-1 px-2 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">成功完成</small>
+                                        <p class="text-success" style="margin-bottom: 0;">占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mt-2">
+                        <div class="card-header">
+                            <div class="hstack d-flex flex-wrap">
+                                <div class="hstack">
+                                    <div class="d-flex d-lg-flex align-items-center justify-content-lg-center align-items-lg-center"><input type="checkbox" class="form-check-input" style="transform: scale(1.30);margin-top: 0;"></div>
+                                    <div class="vr mx-3"></div>
+                                    <div class="d-flex d-lg-flex align-items-center justify-content-lg-center align-items-lg-center form-check form-switch" style="padding: 0;margin-bottom: 0;"><input type="checkbox" id="flexSwitchCheckDefault-2" class="form-check-input" style="transform: scale(1.30);margin-left: 2px;margin-top: 0;"></div>
+                                </div>
+                                <h5 style="margin: 0;margin-left: 12px;">abcdefghijklmnopqrstuvwxyz</h5>
+                                <div class="hstack gap-2 ms-auto"><button class="btn btn-primary" type="button"><span class="spinner-border spinner-border-sm" aria-hidden="true" style="margin-right: 4px;"></span>执行此项</button><button class="btn btn-icon" type="button" style="border-style: none;" data-bs-toggle="collapse" data-bs-target="#collapse-2" aria-expanded="true" aria-controls="collapse-2" herf="#collapse-2"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-chevron-up text-primary rotate-icon" style="transform: scale(1.30);transition: transform 0.35s ease;">
+                                            <path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"></path>
+                                        </svg></button></div>
+                            </div>
+                        </div>
+                        <div class="vstack card-body collapse p-0" id="collapse-2">
+                            <div class="d-flex d-lg-flex justify-content-center justify-content-lg-center" style="margin: var(--bs-card-spacer-y) var(--bs-card-spacer-x);">
+                                <div class="row d-flex flex-wrap w-100 gap-1">
+                                    <div class="col" style="max-width: 38.2%;min-width: 20%;"><label class="form-label" style="font-weight: bold;">描述：</label>
+                                        <p style="margin-bottom: 0;">占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符</p>
+                                        <hr class="w-100" style="margin: 10px 0;"><label class="form-label" style="font-weight: bold;">设置项：</label>
+                                        <form class="form-item-spacing-1">
+                                            <div class="input-group input-group-sm"><span class="text-start input-group-text">设置项Bool</span>
+                                                <div class="input-group-text form-control form-switch" style="padding-left: 16px;"><input type="checkbox" id="flexSwitchCheckDefault-3" class="form-check-input" style="margin: 0;transform: scale(1.30);"></div>
+                                            </div>
+                                            <div class="input-group input-group-sm"><span class="text-start input-group-text">设置项Int</span><input class="form-control" type="text"></div>
+                                            <div class="input-group input-group-sm"><span class="text-start align-items-start input-group-text">设置项<br>MultiSelect</span><select class="form-select" multiple="">
+                                                    <option value="12" selected="">This is item 1</option>
+                                                    <option value="13">This is item 2</option>
+                                                    <option value="14">This is item 3</option>
+                                                </select></div>
+                                            <div class="input-group input-group-sm"><span class="text-start align-items-start input-group-text">设置项<br>SingleSelect</span><select class="form-select">
+                                                    <option value="12" selected="">This is item 1</option>
+                                                    <option value="13">This is item 2</option>
+                                                    <option value="14">This is item 3</option>
+                                                </select></div>
+                                            <div class="input-group input-group-sm"><span class="text-start align-items-start input-group-text">设置项Time</span><input class="form-control" type="time"></div>
+                                        </form>
+                                    </div>
+                                    <div class="col-auto" style="padding: 0;">
+                                        <div class="vr h-100"></div>
+                                    </div>
+                                    <div class="col"><label class="form-label" style="font-weight: bold;">运行结果：</label><small class="text-nowrap py-1 px-2 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">成功完成</small>
+                                        <p class="text-success" style="margin-bottom: 0;">占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>var jinjaUrl = "{{ url }}";</script>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/bs-init.js"></script>
+    <script src="assets/js/card.js"></script>
+    <script src="assets/js/info.js"></script>
+
+</body>
+
+</html>

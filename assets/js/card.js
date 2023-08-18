@@ -26,6 +26,7 @@ $(document).ready(function () {
 
         },
         error: function (ret) {
+            show_toast('error', '获取配置失败。', `${ret.responseText}`);
             // suspend("alert-danger", "获取配置失败");
         },
     });

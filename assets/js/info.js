@@ -125,7 +125,7 @@ function make_card(m) {
     <small id=${m.key}_result_tag class="text-nowrap py-1 px-2 fw-semibold border rounded-2">null</small></div>
     <div class="vstack">
         <form class="h-100">
-        <textarea id=${m.key}_result class="form-control h-100" data-bs-toggle="tooltip" data-bss-tooltip="" style="resize: none;" title="点击复制" readonly placeholder="运行结果" onclick="copy_val(this)">
+        <textarea id=${m.key}_result class="form-control h-100" data-bs-toggle="tooltip" data-bss-tooltip="" style="resize: none;" title="点击复制" readonly placeholder="运行结果" onclick="copy_val(this)"></textarea>
         </form>
     </div></div>`;
 

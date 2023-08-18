@@ -1,7 +1,6 @@
-const rotate_class_name = 'rotate-icon' // 转移到card.js
+const rotate_class_name = 'rotate-icon'
 var user_config = {}
 var share_key = {}
-// 整体操作 Start
 $(document).ready(function () {
     $.ajax({
         url: `/daily/api/${jinjaUrl}` + window.location.search,
@@ -9,37 +8,26 @@ $(document).ready(function () {
         processData: false,
         success: function (ret) {
             let ta_tab = $("#card-stack");
-
             result = ret.last_result;
             user_config = ret.config;
             const data = ret.data;
             const module = ret.order;
-
             for (let i = 0; i < module.length; ++i) {
                 let val = data[module[i]];
-                ta_tab.append(make_card(val)); //添加一列
+                ta_tab.append(make_card(val));
                 switch_toggle_collapse(val.key)
             }
-
             load_results(module, result);
             _icon_rotate()
-
         },
         error: function (ret) {
             show_toast('error', '获取配置失败。', `${ret.responseText}`);
-            // suspend("alert-danger", "获取配置失败");
         },
     });
 });
-// 整体操作 End
-
-// Call主页面Toast Start
 function show_toast(status, text, desc = null) {
     window.parent.show_toast(status, text, desc)
 }
-// Call主页面Toast End
-
-// 展开按钮旋转 Start
 function _icon_rotate() {
     const buttons = document.querySelectorAll('.btn-icon');
     buttons.forEach(button => {
@@ -51,35 +39,17 @@ function _icon_rotate() {
         });
     });
 }
-// 展开按钮旋转 End
-
-// Switch切换卡片状态 Start
 function switch_toggle_collapse(switchID) {
-    // 获取 checkbox 元素
     const _switch = document.getElementById(switchID);
     const button = document.querySelector(`[data-bs-toggle="collapse"][data-bs-target="#collapse-${switchID}"]`);
-    // 添加事件监听器
     _switch.addEventListener("change", function () {
-        // 检查 checkbox 是否被选中
         if (_switch.checked && (button.getAttribute('aria-expanded') == 'false')) {
-            // collapse_set('show', `collapse-` + elementID)
-
-            // 创建一个新的鼠标点击事件
             var clickEvent = new MouseEvent("click");
-
-            // 分派点击事件到按钮元素
             button.dispatchEvent(clickEvent);
         }
     });
 }
-// Switch切换卡片状态 End
-
-// Spinner可见切换 Start
 function toggle_spinner(status = 'hidden', element) {
-    /*
-    status: 'hidden', 'show'
-    element: 该spinner的父元素
-    */
     let spanEl = $(element).children("span.spinner-border")
     switch (status) {
         case 'hidden':
@@ -87,78 +57,41 @@ function toggle_spinner(status = 'hidden', element) {
                 spanEl.addClass("visually-hidden")
             }
             break;
-
         case 'show':
             if (spanEl.hasClass("visually-hidden")) {
                 spanEl.removeClass("visually-hidden")
             }
             break
-
         default:
             break;
     }
 };
-// Spinner可见切换 End
-
-// 第二部分 生成配置代码 Start
-// 第二部分 1.生成配置项块 Start
 function generate_config_HTML(config) {
     share_key[config.key] = (share_key[config.key] || 0) + 1;
     let configHTML = '';
-
-    /*
-    configHTML += `
-        <div class="mb-3" name=${config.key}_card>
-            <h6>${config.desc}</h6>
-            ${generate_option_HTML(config)}
-        </div>
-        `;
-      */
-
     configHTML = `<div class="input-group input-group-sm" name=${config.key}_card><span class="text-start align-items-start input-group-text">${config.desc}</span>${generate_option_HTML(config)}</div>`
     return configHTML;
 }
-// 第二部分 1.生成配置项块 End
-
-// 第二部分 2.生成配置项输入部分-选择器 Start
 function generate_option_HTML(config) {
-
     switch (config.config_type) {
-        //1.单选
         case 'single':
             return get_single_html(config)
             break;
-
-        //2.多选
         case 'multi':
             return get_multi_html(config)
             break;
-
-        //3.数值
         case 'int':
             return get_int_html(config)
             break;
-
-        //4.布尔
         case 'bool':
             return get_bool_html(config)
             break;
-
-        //5.时间
         case 'time':
             return get_time_html(config)
             break;
     }
 }
-// 第二部分 2.生成配置项输入部分-选择器 End
-
-// 第二部分 3.1生成配置项输入部分-具体实现-单选 Start
 function get_single_html(config) {
-    /*
-    let res = `<select class="custom-select" id=${config.key} name=${config.key} onchange="selectOnChange(this)">`;
-    for (let i = 0; i < config.candidates.length; i++) res += `<option value='${config.candidates[i]}' ${user_config[config.key] == config.candidates[i] ? "selected" : ""}>${config.candidates[i]}</option>`;
-    res += "</select>";
-    */
     let res = `<select id=${config.key} class="form-select" name=${config.key} onchange="selectOnChange(this)">`
     for (let i = 0; i < config.candidates.length; i++) {
         res += `<option value='${config.candidates[i]}' ${user_config[config.key] == config.candidates[i] ? "selected" : ""}>${config.candidates[i]}</option>`;
@@ -166,9 +99,6 @@ function get_single_html(config) {
     res += "</select>";
     return res;
 }
-// 第二部分 3.1生成配置项输入部分-具体实现-单选 End
-
-// 第二部分 3.2生成配置项输入部分-具体实现-多选 Start
 function get_multi_html(config) {
     let res = `<select id=${config.key} class="form-select" multiple name=${config.key} onchange="selectMultiOnChange(this)">`;
     for (let i = 0; i < config.candidates.length; i++) {
@@ -177,39 +107,17 @@ function get_multi_html(config) {
     res += "</select>";
     return res;
 }
-// 第二部分 3.2生成配置项输入部分-具体实现-多选 End
-
-// 第二部分 3.3生成配置项输入部分-具体实现-数值 Start
 function get_int_html(config) {
-    /*
-    return `<input type="text" name=${config.key} value=${user_config[config.key]} onchange="selectOnChange(this)" class="form-control" placeholder=${config.candidates[0]}-${config.candidates[config.candidates.length-1]}`;
-    */
     return `<input id=${config.key} class="form-control" type="text" value=${user_config[config.key]} onchange="selectOnChange(this)" placeholder=${config.candidates[0]} ~ ${config.candidates[config.candidates.length - 1]} oninput="value=value.replace(/\D/g,'')" />`;
 }
-// 第二部分 3.3生成配置项输入部分-具体实现-数值 End
-
-// 第二部分 3.4生成配置项输入部分-具体实现-布尔 Start
 function get_bool_html(config) {
-    /*
-    return `<input type="checkbox" class="switch" ${user_config[config.key] ? 'checked="checked"' : ""} id=${config.key} name=${config.key} onclick="checkboxOnclick(this)" />`;
-    */
     let res = `<div class="input-group-text form-control form-switch px-3" style="min-width: fit-content;">`
     res += `<input id=${config.key} class="form-check-input m-0" type="checkbox" style="transform: scale(1.30);" name=${config.key} ${user_config[config.key] ? 'checked="checked"' : ""} onclick="checkboxOnclick(this)" /></div>`;
     return res
 }
-// 第二部分 3.4生成配置项输入部分-具体实现-布尔 End
-
-// 第二部分 3.5生成配置项输入部分-具体实现-时间 Start
 function get_time_html(config) {
-    /*
-    return `<input type="time" class="form-control" id=${config.key} name=${config.key} value=${user_config[config.key]} onchange="selectOnChange(this)" />`;
-    */
     return `<input id=${config.key} class="form-control" type="time" name=${config.key} value=${user_config[config.key]} onchange="selectOnChange(this)" />`;
 }
-// 第二部分 3.5生成配置项输入部分-具体实现-时间 End
-// 第二部分 生成配置代码 End
-
-// 第三部分 1函数定义-结果Tag颜色及文本
 function set_tag(status, element) {
     const classDict = {
         'success': [`text-success-emphasis`, `bg-success-subtle`, `border-success-subtle`],
@@ -254,24 +162,12 @@ function set_tag(status, element) {
             break;
     }
 }
-
-// 第三部分 3.载入运行结果文本
 function load_results(module, ret) {
     for (let i = 0; i < module.length; ++i) {
-        // let key = module[i];
         load_result(ret, module[i]);
     }
 }
-// load_result函数见页面独特js
-
-// 第三部分 载入运行结果 End
-// 第四部分 事件函数
-// 以下均已移动至card.js
-// 点击时保存 Start
 function selectOnChange(e) {
-    /*
-    适用于time/int/single类型
-    */
     const key = e.id;
     let value = e.value;
     if (isDigit(value))
@@ -280,24 +176,15 @@ function selectOnChange(e) {
     $(`[name=${key}]`).val(value);
     update_new();
 }
-// 点击时保存 End
-
-// 检查int Start
 function isDigit(str) {
     for (var i = 0; i < str.length; i++) {
         if (isNaN(parseInt(str[i]))) {
-            return false; // 包含非数字字符
+            return false;
         }
     }
-    return true; // 不包含非数字字符
+    return true;
 };
-// 检查int End
-
-// 点击时保存（多选 Start
 function selectMultiOnChange(e) {
-    /*
-    Multi类型专用
-    */
     const key = e.id;
     let value = Array.from(e.selectedOptions).map(option => option.value);
     const intValue = value.map(option => parseInt(option))
@@ -306,26 +193,16 @@ function selectMultiOnChange(e) {
     user_config[key] = value;
     update_new();
 };
-// 点击时保存（多选 End
-
-// 点击时保存（checkbox Start
 function checkboxOnclick(checkbox) {
-    /*
-    适用于switch
-    */
     const key = checkbox.id;
     const value = checkbox.checked;
     user_config[key] = value;
     update_new();
 }
-// 点击时保存（checkbox End
-
-// 单项执行 Start
 function do_single(e) {
     const flag = e.getAttribute('flag');
     $(`[flag=${flag}]`).attr('disabled', true);
     toggle_spinner('show', e);
-    // suspend("alert-info", "已开始执行。");
     show_toast('info', `已开始执行“${e.name}”。`)
     let config = {
         config: user_config,
@@ -340,33 +217,25 @@ function do_single(e) {
             load_results(ret.order, ret.result);
             $(`[flag=${flag}]`).attr('disabled', false);
             toggle_spinner('hidden', e);
-            // suspend("alert-success", "任务执行成功！");
             show_toast('success', `“${e.name}”执行成功。`)
         },
         error: function (ret) {
-            // suspend("alert-danger", "执行任务失败: " + ret.responseText);
             show_toast('error', `“${e.name}”执行失败。`, `${ret.responseText}`)
             $(`[flag=${flag}]`).attr('disabled', false);
             toggle_spinner('hidden', e);
         }
     })
 }
-// 单项执行 End
-
-// 全部执行 Start
 function do_all_task(e) {
     const flag = e.getAttribute('flag');
     $(`[flag=${flag}]`).attr('disabled', true);
     toggle_spinner('show', e)
-    // suspend("alert-info", "已开始执行清日常任务。");
     show_toast('info', `已开始执行任务。`)
     $.ajax({
         url: '/daily/api/do_task' + window.location.search,
         type: 'get',
         processData: false,
         success: function (ret) {
-            // <!-- prompt(JSON.stringify(ret), "alert-success", 60000); -->
-            // suspend("alert-success", "清日常任务执行完毕。");
             show_toast('success', `任务执行完毕。`)
             toggle_spinner('hidden', e)
             $(`[flag=${flag}]`).attr('disabled', false);
@@ -379,5 +248,3 @@ function do_all_task(e) {
         }
     })
 };
-// 全部执行 End
-// 第三部分 事件函数 End

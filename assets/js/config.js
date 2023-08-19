@@ -2,16 +2,25 @@ const iframeActionID = 'iframe-action'
 const iframeInfoID = 'iframe-info'
 const toastContainerID = 'toast-container-1'
 const configFormID = ['form-normal-config', 'form-account-config'];
-
+var share_ret = undefined
 // 载入信息 Start
 $(document).ready(function () {
+    document.getElementById('card-main').style.pointerEvents = 'none';
+    ready_info_get(true)
     $(`#${iframeActionID}`).attr('src', 'action.html' + window.location.search);
     $(`#${iframeInfoID}`).attr('src', 'info.html' + window.location.search);
+    document.getElementById('card-main').style.pointerEvents = 'auto';
+}
+);
+
+function ready_info_get(toggle) {
+    document.getElementById('main-tab-content').style.pointerEvents = 'none';
     $.ajax({
         url: `/daily/api/${jinjaUrlConfig}` + window.location.search,
         type: "get",
         processData: false,
         success: function (ret) {
+            share_ret = ret
             // let ta_tab = $("#module");
             $("#input-alian").val(ret.alian);
             $("#input-qqnum").val(ret.qq);
@@ -39,19 +48,20 @@ $(document).ready(function () {
             // }
 
             // load_results(module, result);
-            if (ret.username || ret.alian) {
+            if ((share_ret.username || share_ret.alian) && toggle) {
                 $("#tab-main a[href='#tab-2']").tab("show");
             } else {
                 $("tab-main a[href='#tab-1']").tab("show");
             }
+            document.getElementById('main-tab-content').style.pointerEvents = 'auto';
         },
         error: function (ret) {
+            document.getElementById('card-main').style.pointerEvents = 'none';
             show_toast('error', '获取配置失败。', `${ret.responseText}`);
             // suspend("alert-danger", "获取配置失败");
         },
     });
 }
-);
 // 载入信息 End
 
 // 动态设置iframe高度 Start
@@ -196,7 +206,7 @@ function update_new() {
     config['qq'] = $("#input-qqnum").val();
     config['username'] = $("#input-uname").val();
     config['password'] = $("#input-upwd").val();
-    config['config'] = user_config;
+    // config['config'] = user_config;
 
     $.ajax({
         url: `/daily/api/${jinjaUrlConfig}` + window.location.search,
@@ -207,7 +217,8 @@ function update_new() {
         success: function (ret) {
             if (ret.statusCode == 200) {
                 // suspend("alert-success", ret.message);
-                document.getElementById('main-tab-content').style.pointerEvents = 'auto';
+                ready_info_get(false);
+                // document.getElementById('main-tab-content').style.pointerEvents = 'auto';
                 show_toast('success', '本次修改保存成功。')
             } else {
                 // alert("本次修改保存失败：" + ret.message + "\n如有需要，请联系管理员\n点击确定将为您刷新页面");

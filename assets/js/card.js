@@ -256,6 +256,40 @@ function set_tag(status, element) {
 }
 
 // 第三部分 3.载入运行结果文本
+function update_new() {
+    let config = {};
+    // document.getElementById('main-tab-content').style.pointerEvents = 'none';
+    // config['alian'] = $("#input-alian").val();
+    // config['qq'] = $("#input-qqnum").val();
+    // config['username'] = $("#input-uname").val();
+    // config['password'] = $("#input-upwd").val();
+    config['config'] = user_config;
+    $.ajax({
+        url: `/daily/api/${jinjaUrl}` + window.location.search,
+        type: "put",
+        data: JSON.stringify(config),
+        contentType: "application/json;charset=utf-8",
+        processData: false,
+        success: function (ret) {
+            if (ret.statusCode == 200) {
+                // document.getElementById('main-tab-content').style.pointerEvents = 'auto';
+                show_toast('success', '本次修改保存成功。')
+            } else {
+                show_toast('error', '本次修改保存失败。', `将于三秒后刷新页面，如有需要请联系管理员。\n${ret.message}`);
+                setTimeout(function() {
+                    location.reload(true);
+                }, 3000);
+            }
+        },
+        error: function (ret) {
+            show_toast('error', '本次修改保存失败。', `将于三秒后刷新页面，如有需要请联系管理员。\n${ret.message}`);
+            setTimeout(function() {
+                location.reload(true);
+            }, 3000);
+        },
+    });
+}
+
 function load_results(module, ret) {
     for (let i = 0; i < module.length; ++i) {
         // let key = module[i];

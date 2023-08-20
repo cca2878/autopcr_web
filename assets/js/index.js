@@ -2,8 +2,8 @@
 // 输入检查 Start
 function check_input(e) {
     e.value=e.value.replace(/[^a-zA-Z0-9_]/g, '')
-    let btnLogin = document.getElementById("login");
-    let btnReg = document.getElementById("register");
+    let btnLogin = document.getElementById("btn-login");
+    let btnReg = document.getElementById("btn-register");
     if (e.value === "") {
         btnLogin.setAttribute("disabled", "disabled");
         btnReg.setAttribute("disabled", "disabled");

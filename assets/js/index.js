@@ -1,4 +1,18 @@
 // const flag = 'olo'
+// 输入检查 Start
+function check_input(e) {
+    e.value=e.value.replace(/[^a-zA-Z0-9_]/g, '')
+    let btnLogin = document.getElementById("login");
+    let btnReg = document.getElementById("register");
+    if (e.value === "") {
+        btnLogin.setAttribute("disabled", "disabled");
+        btnReg.setAttribute("disabled", "disabled");
+    } else {
+        btnLogin.removeAttribute("disabled");
+        btnReg.removeAttribute("disabled");
+    }
+}
+// 输入检查 End
 // 账号注册 Start
 function register() {
     document.getElementById('card-index').style.pointerEvents = 'none';

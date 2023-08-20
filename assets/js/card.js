@@ -184,7 +184,7 @@ function get_int_html(config) {
     /*
     return `<input type="text" name=${config.key} value=${user_config[config.key]} onchange="selectOnChange(this)" class="form-control" placeholder=${config.candidates[0]}-${config.candidates[config.candidates.length-1]}`;
     */
-    return `<input id=${config.key} class="form-control" type="text" value=${user_config[config.key]} onchange="selectOnChange(this)" placeholder=${config.candidates[0]} ~ ${config.candidates[config.candidates.length - 1]} oninput="value=value.replace(/\D/g,'')" />`;
+    return `<input id=${config.key} class="form-control" type="text" value=${user_config[config.key]} onchange="selectOnChange(this)" name=${config.key} placeholder=${config.candidates[0]} ~ ${config.candidates[config.candidates.length - 1]} oninput="value=value.replace(/\D/g,'')" />`;
 }
 // 第二部分 3.3生成配置项输入部分-具体实现-数值 End
 
@@ -312,8 +312,8 @@ function selectOnChange(e) {
     if (isDigit(value))
         value = parseInt(value);
     user_config[key] = value;
-    $(`[name=${key}]`).val(value);
     update_new();
+    $(`[name=${key}]`).val(value);
 }
 // 点击时保存 End
 

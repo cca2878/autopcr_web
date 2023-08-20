@@ -61,7 +61,8 @@ function switch_toggle_collapse(switchID) {
     // 添加事件监听器
     _switch.addEventListener("change", function () {
         // 检查 checkbox 是否被选中
-        if (_switch.checked && (button.getAttribute('aria-expanded') == 'false')) {
+        // if (_switch.checked && (button.getAttribute('aria-expanded') == 'false')) {
+        if (_switch.checked ^ (button.getAttribute('aria-expanded') == 'true')) {
             // collapse_set('show', `collapse-` + elementID)
 
             // 创建一个新的鼠标点击事件

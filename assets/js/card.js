@@ -160,7 +160,7 @@ function get_single_html(config) {
     for (let i = 0; i < config.candidates.length; i++) res += `<option value='${config.candidates[i]}' ${user_config[config.key] == config.candidates[i] ? "selected" : ""}>${config.candidates[i]}</option>`;
     res += "</select>";
     */
-    let res = `<select id=${config.key} class="form-select" name=${config.key} onchange="selectOnChange(this)">`
+    let res = `<select id=${config.key} class="form-select" style="min-width: fit-content;" name=${config.key} onchange="selectOnChange(this)">`
     for (let i = 0; i < config.candidates.length; i++) {
         res += `<option value='${config.candidates[i]}' ${user_config[config.key] == config.candidates[i] ? "selected" : ""}>${config.candidates[i]}</option>`;
     }
@@ -171,7 +171,7 @@ function get_single_html(config) {
 
 // 第二部分 3.2生成配置项输入部分-具体实现-多选 Start
 function get_multi_html(config) {
-    let res = `<select id=${config.key} class="form-select" multiple name=${config.key} onchange="selectMultiOnChange(this)">`;
+    let res = `<select id=${config.key} class="form-select" style="min-width: fit-content;" multiple name=${config.key} onchange="selectMultiOnChange(this)">`;
     for (let i = 0; i < config.candidates.length; i++) {
         res += `<option value='${config.candidates[i]}' ${user_config[config.key].includes(config.candidates[i]) ? "selected" : ""}>${config.candidates[i]}</option>`;
     }
@@ -185,7 +185,7 @@ function get_int_html(config) {
     /*
     return `<input type="text" name=${config.key} value=${user_config[config.key]} onchange="selectOnChange(this)" class="form-control" placeholder=${config.candidates[0]}-${config.candidates[config.candidates.length-1]}`;
     */
-    return `<input id=${config.key} class="form-control" type="text" value=${user_config[config.key]} onchange="selectOnChange(this)" oninput="value=value.replace(/\D/g,&#39;&#39;)" name=${config.key} placeholder=${config.candidates[0]} ~ ${config.candidates[config.candidates.length - 1]} oninput="value=value.replace(/\D/g,'')" />`;
+    return `<input id=${config.key} class="form-control" style="min-width: fit-content;" type="text" value=${user_config[config.key]} onchange="selectOnChange(this)" oninput="value=value.replace(/\D/g,&#39;&#39;)" name=${config.key} placeholder=${config.candidates[0]} ~ ${config.candidates[config.candidates.length - 1]} oninput="value=value.replace(/\D/g,'')" />`;
 }
 // 第二部分 3.3生成配置项输入部分-具体实现-数值 End
 
@@ -205,7 +205,7 @@ function get_time_html(config) {
     /*
     return `<input type="time" class="form-control" id=${config.key} name=${config.key} value=${user_config[config.key]} onchange="selectOnChange(this)" />`;
     */
-    return `<input id=${config.key} class="form-control" type="time" name=${config.key} value=${user_config[config.key]} onchange="selectOnChange(this)" />`;
+    return `<input id=${config.key} class="form-control" style="min-width: fit-content;" type="time" name=${config.key} value=${user_config[config.key]} onchange="selectOnChange(this)" />`;
 }
 // 第二部分 3.5生成配置项输入部分-具体实现-时间 End
 // 第二部分 生成配置代码 End
